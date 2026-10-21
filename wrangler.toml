@@ -6,7 +6,7 @@ pages_build_output_dir = "./public"
 [[d1_databases]]
 binding = "DB"
 database_name = "tin-cong-nghe-db"
-database_id = "tin-cong-nghe-db-local"
+database_id = "cb5878cf-92b3-443a-add8-a5b8111df54f"
 
 [ai]
 binding = "AI"
