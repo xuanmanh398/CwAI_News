@@ -4,7 +4,7 @@
 import { XMLParser } from 'fast-xml-parser';
 import { ParsedFeedItem } from '../types/index.js';
 import { validateSafeUrl } from '../security/ssrf.js';
-import { stripHtmlToPlainText } from '../security/sanitize.js';
+import { stripHtmlToPlainText, decodeHtmlEntities } from '../security/sanitize.js';
 
 export interface FeedFetchResult {
   success: boolean;
@@ -86,11 +86,13 @@ export function parseXmlFeed(xmlString: string, maxItems: number = 10): FeedFetc
         }
 
         if (title && link) {
+          const cleanTitle = decodeHtmlEntities(title.trim()).normalize('NFC');
+          const cleanDesc = decodeHtmlEntities(stripHtmlToPlainText(rawDesc || content || '')).slice(0, 500).normalize('NFC');
           items.push({
-            title: title.trim().normalize('NFC'),
+            title: cleanTitle,
             link: link.trim(),
-            description: stripHtmlToPlainText(rawDesc || content || '').slice(0, 500).normalize('NFC'),
-            content: content ? content.trim().normalize('NFC') : undefined,
+            description: cleanDesc,
+            content: content ? decodeHtmlEntities(content.trim()).normalize('NFC') : undefined,
             pubDate: pubDate ? pubDate.trim() : undefined,
             guid: guid || link,
             categories,
@@ -125,10 +127,12 @@ export function parseXmlFeed(xmlString: string, maxItems: number = 10): FeedFetc
         }
 
         if (title && link) {
+          const cleanTitle = decodeHtmlEntities(title.trim()).normalize('NFC');
+          const cleanSummary = decodeHtmlEntities(stripHtmlToPlainText(rawSummary)).slice(0, 500).normalize('NFC');
           items.push({
-            title: title.trim().normalize('NFC'),
+            title: cleanTitle,
             link: link.trim(),
-            description: stripHtmlToPlainText(rawSummary).slice(0, 500).normalize('NFC'),
+            description: cleanSummary,
             pubDate: pubDate ? pubDate.trim() : undefined,
             guid: guid || link,
             categories,

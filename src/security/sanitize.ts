@@ -1,6 +1,78 @@
 // src/security/sanitize.ts
 // Anti-XSS Sanitizer for Vietnamese News Content
 
+export function decodeHtmlEntities(str: string): string {
+  if (!str) return '';
+
+  const NAMED_ENTITIES: Record<string, string> = {
+    '&amp;': '&',
+    '&lt;': '<',
+    '&gt;': '>',
+    '&quot;': '"',
+    '&apos;': "'",
+    '&#39;': "'",
+    '&nbsp;': ' ',
+    '&ndash;': '–',
+    '&mdash;': '—',
+    '&hellip;': '…',
+    '&eacute;': 'é',
+    '&Eacute;': 'É',
+    '&agrave;': 'à',
+    '&Agrave;': 'À',
+    '&aacute;': 'á',
+    '&Aacute;': 'Á',
+    '&oacute;': 'ó',
+    '&Oacute;': 'Ó',
+    '&ograve;': 'ò',
+    '&Ograve;': 'Ò',
+    '&ecirc;': 'ê',
+    '&Ecirc;': 'Ê',
+    '&iacute;': 'í',
+    '&Iacute;': 'Í',
+    '&igrave;': 'ì',
+    '&Igrave;': 'Ì',
+    '&uacute;': 'ú',
+    '&Uacute;': 'Ú',
+    '&ugrave;': 'ù',
+    '&Ugrave;': 'Ù',
+    '&yacute;': 'ý',
+    '&Yacute;': 'Ý',
+    '&atilde;': 'ã',
+    '&Atilde;': 'Ã',
+    '&otilde;': 'õ',
+    '&Otilde;': 'Õ',
+    '&ntilde;': 'ñ',
+    '&Ntilde;': 'Ñ',
+  };
+
+  let decoded = str;
+
+  // Replace named entities
+  for (const [entity, char] of Object.entries(NAMED_ENTITIES)) {
+    decoded = decoded.split(entity).join(char);
+  }
+
+  // Replace decimal entities &#123;
+  decoded = decoded.replace(/&#(\d+);/g, (_, dec) => {
+    try {
+      return String.fromCharCode(parseInt(dec, 10));
+    } catch {
+      return _;
+    }
+  });
+
+  // Replace hex entities &#x1a;
+  decoded = decoded.replace(/&#x([0-9a-fA-F]+);/g, (_, hex) => {
+    try {
+      return String.fromCharCode(parseInt(hex, 16));
+    } catch {
+      return _;
+    }
+  });
+
+  return decoded.normalize('NFC');
+}
+
 export function escapeHtml(str: string): string {
   if (!str) return '';
   return str

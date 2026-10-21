@@ -29,7 +29,7 @@ export async function runIngestionPipeline(
   env: Env,
   options: { maxItemsPerFeed?: number; forced?: boolean; actor?: string } = {}
 ): Promise<IngestionResult> {
-  const { maxItemsPerFeed = 5, forced = false, actor = 'system' } = options;
+  const { maxItemsPerFeed = 10, forced = false, actor = 'system' } = options;
   const startedAt = new Date().toISOString();
   const runId = `run_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
 
@@ -116,14 +116,14 @@ export async function runIngestionPipeline(
         item.title = item.title.normalize('NFC').trim();
         item.description = item.description.normalize('NFC').trim();
 
-        // Freshness Check: Only ingest fresh news (published within last 48 hours)
+        // Freshness Check: Ingest news published within last 7 days (168 hours)
         let sourcePubIso: string | null = null;
         if (item.pubDate) {
           const parsedDate = new Date(item.pubDate);
           if (!isNaN(parsedDate.getTime())) {
             const ageHours = (Date.now() - parsedDate.getTime()) / (1000 * 60 * 60);
-            if (ageHours > 48) {
-              // Skip old articles to only keep fresh, current tech news
+            if (ageHours > 7 * 24) {
+              // Skip articles older than 7 days to keep news current
               continue;
             }
             sourcePubIso = parsedDate.toISOString();
