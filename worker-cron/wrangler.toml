@@ -1,0 +1,10 @@
+name = "tin-cong-nghe-cron"
+main = "index.ts"
+compatibility_date = "2024-04-03"
+
+[triggers]
+crons = ["0 */2 * * *"] # Chạy mỗi 2 giờ một lần (hoặc tùy chỉnh)
+
+[vars]
+PAGES_API_URL = "https://tincongnghe.pages.dev/api/cron/ingest"
+CRON_SECRET = "cron-secret-token-change-in-production"
