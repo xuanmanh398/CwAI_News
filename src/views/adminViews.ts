@@ -232,7 +232,7 @@ export function renderDashboardView(data: {
     <div class="stat-card published">
       <div class="label">Đã xuất bản</div>
       <div class="value">${publishedCount}</div>
-      <a href="/" target="_blank" style="font-size:0.82rem; color:var(--admin-success); font-weight:600;">Xem trên trang chủ »</a>
+      <a href="/admin/queue?status=published" style="font-size:0.82rem; color:var(--admin-success); font-weight:600;">Xem & Xóa bài đã duyệt »</a>
     </div>
     <div class="stat-card rejected">
       <div class="label">Bản nháp từ chối</div>
@@ -322,14 +322,31 @@ export function renderDashboardView(data: {
 export function renderQueueView(
   articles: Article[],
   categoryFilter?: string,
-  searchQuery?: string
+  searchQuery?: string,
+  statusFilter: string = 'pending'
 ): string {
+  const statusLabel =
+    statusFilter === 'published'
+      ? 'Đã xuất bản'
+      : statusFilter === 'rejected'
+      ? 'Đã từ chối'
+      : statusFilter === 'all'
+      ? 'Tất cả trạng thái'
+      : 'Chờ duyệt';
+
   return `
 <div>
   <!-- Filter & Actions Bar -->
   <div class="action-bar">
     <div class="filter-group">
-      <select onchange="location.href='/admin/queue?cat=' + encodeURIComponent(this.value)">
+      <select onchange="updateParam('status', this.value)">
+        <option value="pending" ${statusFilter === 'pending' ? 'selected' : ''}>⏳ Chờ duyệt (Pending)</option>
+        <option value="published" ${statusFilter === 'published' ? 'selected' : ''}>✅ Đã xuất bản (Published)</option>
+        <option value="rejected" ${statusFilter === 'rejected' ? 'selected' : ''}>❌ Đã từ chối (Rejected)</option>
+        <option value="all" ${statusFilter === 'all' ? 'selected' : ''}>📑 Tất cả bài viết</option>
+      </select>
+
+      <select onchange="updateParam('cat', this.value)">
         <option value="">Tất cả chuyên mục</option>
         <option value="Trí tuệ nhân tạo (AI)" ${categoryFilter === 'Trí tuệ nhân tạo (AI)' ? 'selected' : ''}>Trí tuệ nhân tạo (AI)</option>
         <option value="Phần mềm" ${categoryFilter === 'Phần mềm' ? 'selected' : ''}>Phần mềm</option>
@@ -339,6 +356,8 @@ export function renderQueueView(
       </select>
 
       <form action="/admin/queue" method="GET" style="display:flex; gap:6px; margin:0;">
+        <input type="hidden" name="status" value="${escapeHtml(statusFilter)}">
+        ${categoryFilter ? `<input type="hidden" name="cat" value="${escapeHtml(categoryFilter)}">` : ''}
         <input type="text" name="q" value="${escapeHtml(searchQuery || '')}" placeholder="Tìm theo tiêu đề hoặc nguồn...">
         <button type="submit" class="btn btn-secondary">Tìm</button>
       </form>
@@ -346,7 +365,7 @@ export function renderQueueView(
 
     <div>
       <span style="font-size:0.88rem; color:var(--admin-muted); font-weight:600;">
-        Đang có <strong>${articles.length}</strong> bản nháp chờ duyệt
+        <strong>${articles.length}</strong> bài viết (${statusLabel})
       </span>
     </div>
   </div>
@@ -356,20 +375,26 @@ export function renderQueueView(
     <table class="data-table">
       <thead>
         <tr>
-          <th style="width:40%;">Tiêu đề bản nháp & Tiêu đề gốc</th>
+          <th style="width:38%;">Tiêu đề bài viết & Nguồn gốc</th>
           <th>Chuyên mục</th>
-          <th>Nguồn tin</th>
-          <th>Cảnh báo / Trạng thái</th>
+          <th>Trạng thái</th>
+          <th>Ngày cập nhật</th>
           <th style="text-align:right;">Thao tác</th>
         </tr>
       </thead>
       <tbody>
         ${
           articles.length === 0
-            ? '<tr><td colspan="5" style="text-align:center; padding:40px; color:#94a3b8;">Không có bài viết nào trong hàng chờ duyệt. Hãy nhấn "Lấy tin RSS ngay" để nạp bài mới.</td></tr>'
+            ? `<tr><td colspan="5" style="text-align:center; padding:40px; color:#94a3b8;">
+                Không có bài viết nào phù hợp với bộ lọc hiện tại (${statusLabel}).
+               </td></tr>`
             : articles
                 .map((art) => {
+                  const isPublished = art.status === 'published';
+                  const isPending = art.status === 'pending';
+                  const isRejected = art.status === 'rejected';
                   const hasWarning = !!art.facts_to_verify;
+
                   return `
             <tr>
               <td>
@@ -377,27 +402,45 @@ export function renderQueueView(
                   <a href="/admin/edit/${art.id}" style="color:var(--admin-primary);">${escapeHtml(art.title)}</a>
                 </div>
                 <div style="font-size:0.8rem; color:#64748b;">
-                  Gốc: <em>${escapeHtml(art.original_title)}</em>
+                  Nguồn: <strong>${escapeHtml(art.source_name)}</strong> 
+                  ${art.source_url ? `• <a href="${escapeHtml(art.source_url)}" target="_blank" rel="noopener noreferrer" style="color:var(--admin-accent);">Xem bài gốc ↗</a>` : ''}
                 </div>
               </td>
-              <td><span class="badge badge-pending">${escapeHtml(art.category)}</span></td>
-              <td>
-                <div style="font-weight:600; font-size:0.85rem;">${escapeHtml(art.source_name)}</div>
-                <a href="${escapeHtml(art.source_url)}" target="_blank" rel="noopener noreferrer" style="font-size:0.75rem; color:var(--admin-accent);">Xem bài gốc ↗</a>
-              </td>
+              <td><span class="badge badge-ai">${escapeHtml(art.category)}</span></td>
               <td>
                 ${
-                  hasWarning
-                    ? `<span class="badge" style="background:#fef3c7; color:#b45309;">⚠️ Cần xác minh</span>
-                       <div style="font-size:0.75rem; color:#b45309; margin-top:2px;">${escapeHtml(art.facts_to_verify || '')}</div>`
-                    : '<span class="badge badge-ai">🤖 AI đã tạo nháp</span>'
+                  isPublished
+                    ? '<span class="badge badge-published">✅ Đã xuất bản</span>'
+                    : isPending
+                    ? `<span class="badge badge-pending">⏳ Chờ duyệt</span>
+                       ${hasWarning ? `<div style="font-size:0.75rem; color:#b45309; margin-top:2px;">⚠️ Cần xem lại</div>` : ''}`
+                    : '<span class="badge badge-rejected">❌ Đã từ chối</span>'
                 }
               </td>
+              <td style="font-size:0.8rem; color:#64748b; white-space:nowrap;">
+                ${art.published_at ? new Date(art.published_at).toLocaleString('vi-VN') : new Date(art.created_at).toLocaleString('vi-VN')}
+              </td>
               <td style="text-align:right; white-space:nowrap;">
-                <a href="/admin/preview/${art.id}" target="_blank" class="btn btn-outline" style="font-size:0.78rem; padding:4px 8px;" title="Xem trước">Xem</a>
-                <a href="/admin/edit/${art.id}" class="btn btn-primary" style="font-size:0.78rem; padding:4px 8px;">Sửa & Duyệt</a>
-                <button onclick="quickPublish('${art.id}', '${escapeHtml(art.title.replace(/'/g, "\\'"))}')" class="btn btn-success" style="font-size:0.78rem; padding:4px 8px;">Duyệt</button>
-                <button onclick="quickReject('${art.id}')" class="btn btn-danger" style="font-size:0.78rem; padding:4px 8px;">Từ chối</button>
+                ${
+                  isPublished
+                    ? `
+                  <a href="/bai-viet/${art.slug}" target="_blank" class="btn btn-outline" style="font-size:0.78rem; padding:4px 8px;">Xem trang chủ ↗</a>
+                  <a href="/admin/edit/${art.id}" class="btn btn-primary" style="font-size:0.78rem; padding:4px 8px;">Sửa bài</a>
+                  <button onclick="quickDelete('${art.id}', '${escapeHtml(art.title.replace(/'/g, "\\'"))}')" class="btn btn-danger" style="font-size:0.78rem; padding:4px 8px;" title="Xóa vĩnh viễn bài này">🗑️ Xóa bài</button>
+                `
+                    : isPending
+                    ? `
+                  <a href="/admin/preview/${art.id}" target="_blank" class="btn btn-outline" style="font-size:0.78rem; padding:4px 8px;" title="Xem trước">Xem</a>
+                  <a href="/admin/edit/${art.id}" class="btn btn-primary" style="font-size:0.78rem; padding:4px 8px;">Sửa & Duyệt</a>
+                  <button onclick="quickPublish('${art.id}', '${escapeHtml(art.title.replace(/'/g, "\\'"))}')" class="btn btn-success" style="font-size:0.78rem; padding:4px 8px;">Duyệt</button>
+                  <button onclick="quickReject('${art.id}')" class="btn btn-warning" style="font-size:0.78rem; padding:4px 8px;">Từ chối</button>
+                  <button onclick="quickDelete('${art.id}', '${escapeHtml(art.title.replace(/'/g, "\\'"))}')" class="btn btn-danger" style="font-size:0.78rem; padding:4px 8px;">🗑️ Xóa</button>
+                `
+                    : `
+                  <a href="/admin/edit/${art.id}" class="btn btn-primary" style="font-size:0.78rem; padding:4px 8px;">Xem</a>
+                  <button onclick="quickDelete('${art.id}', '${escapeHtml(art.title.replace(/'/g, "\\'"))}')" class="btn btn-danger" style="font-size:0.78rem; padding:4px 8px;">🗑️ Xóa vĩnh viễn</button>
+                `
+                }
               </td>
             </tr>
           `;
@@ -410,13 +453,20 @@ export function renderQueueView(
 </div>
 
 <script>
+  function updateParam(key, val) {
+    const url = new URL(window.location.href);
+    if (val) url.searchParams.set(key, val);
+    else url.searchParams.delete(key);
+    window.location.href = url.pathname + url.search;
+  }
+
   async function quickPublish(id, title) {
     if (!confirm('Bạn có chắc chắn muốn XUẤT BẢN bài viết:\\n"' + title + '"?')) return;
     try {
       const res = await fetch('/api/admin/articles/' + id + '/publish', { method: 'POST' });
       const data = await res.json();
       if (data.success) {
-        alert('Đã xuất bản thành công bài viết!');
+        alert('Đã xuất bản thành công bài viết lên trang chủ!');
         location.reload();
       } else {
         alert('Lỗi: ' + (data.message || 'Không thể xuất bản'));
@@ -438,6 +488,22 @@ export function renderQueueView(
       }
     } catch (err) {
       alert('Lỗi mạng: ' + err.message);
+    }
+  }
+
+  async function quickDelete(id, title) {
+    if (!confirm('CẢNH BÁO: Bạn có chắc chắn muốn XÓA VĨNH VIỄN bài viết:\\n"' + title + '"?\\nBài viết sẽ bị gỡ ngay khỏi trang chủ và không thể hoàn tác!')) return;
+    try {
+      const res = await fetch('/api/admin/articles/' + id, { method: 'DELETE' });
+      const data = await res.json();
+      if (data.success) {
+        alert('Đã xóa bài viết thành công!');
+        location.reload();
+      } else {
+        alert('Lỗi xóa: ' + (data.message || 'Không thể xóa'));
+      }
+    } catch (err) {
+      alert('Lỗi kết nối: ' + err.message);
     }
   }
 </script>
@@ -521,11 +587,16 @@ export function renderEditorView(article: Article): string {
           </div>
 
           <!-- Action Buttons Bar -->
-          <div style="display:flex; gap:10px; margin-top:24px; padding-top:16px; border-top:1px solid #e2e8f0; flex-wrap:wrap;">
-            <button type="button" onclick="saveDraft()" class="btn btn-secondary">💾 Lưu nháp</button>
-            <a href="/admin/preview/${article.id}" target="_blank" class="btn btn-outline">👁️ Xem trước giao diện</a>
-            <button type="button" onclick="publishArticle()" class="btn btn-success" style="font-size:0.95rem;">🚀 Phê duyệt & Xuất bản</button>
-            <button type="button" onclick="rejectArticle()" class="btn btn-danger" style="margin-left:auto;">❌ Từ chối bài</button>
+          <div style="display:flex; gap:10px; margin-top:24px; padding-top:16px; border-top:1px solid #e2e8f0; flex-wrap:wrap; align-items:center;">
+            <button type="button" onclick="saveDraft()" class="btn btn-secondary">💾 Lưu thay đổi</button>
+            ${
+              article.status === 'published'
+                ? `<a href="/bai-viet/${article.slug}" target="_blank" class="btn btn-outline">🌐 Xem trên trang chủ ↗</a>`
+                : `<a href="/admin/preview/${article.id}" target="_blank" class="btn btn-outline">👁️ Xem trước giao diện</a>
+                   <button type="button" onclick="publishArticle()" class="btn btn-success" style="font-size:0.95rem;">🚀 Phê duyệt & Xuất bản</button>
+                   <button type="button" onclick="rejectArticle()" class="btn btn-warning">❌ Từ chối</button>`
+            }
+            <button type="button" onclick="deleteCurrentArticle()" class="btn btn-danger" style="margin-left:auto;">🗑️ Xóa vĩnh viễn bài này</button>
           </div>
         </form>
       </div>
@@ -639,6 +710,22 @@ export function renderEditorView(article: Article): string {
       }
     } catch (err) {
       alert('Lỗi: ' + err.message);
+    }
+  }
+
+  async function deleteCurrentArticle() {
+    if (!confirm('CẢNH BÁO NGUY HIỂM: Bạn có chắc chắn muốn XÓA VĨNH VIỄN bài viết này?\\nBài viết sẽ bị gỡ bỏ ngay lập tức và không thể phục hồi!')) return;
+    try {
+      const res = await fetch('/api/admin/articles/${article.id}', { method: 'DELETE' });
+      const result = await res.json();
+      if (result.success) {
+        alert('Đã xóa bài viết thành công!');
+        window.location.href = '/admin/queue?status=${article.status}';
+      } else {
+        alert('Lỗi: ' + (result.message || 'Không thể xóa'));
+      }
+    } catch (err) {
+      alert('Lỗi mạng: ' + err.message);
     }
   }
 </script>

@@ -39,7 +39,7 @@ export function renderAdminLayout(
     <nav class="admin-nav">
       <a href="/admin" class="${options.activeNav === 'dashboard' ? 'active' : ''}">Bảng điều khiển</a>
       <a href="/admin/create" class="btn btn-success" style="font-size:0.82rem; padding:4px 10px; color:#fff;">✍️ Viết bài mới</a>
-      <a href="/admin/queue" class="${options.activeNav === 'queue' ? 'active' : ''}">Hàng chờ duyệt ${pendingBadge}</a>
+      <a href="/admin/queue" class="${options.activeNav === 'queue' ? 'active' : ''}">Quản lý bài viết ${pendingBadge}</a>
       <a href="/admin/feeds" class="${options.activeNav === 'feeds' ? 'active' : ''}">Quản lý RSS</a>
       <a href="/admin/audit" class="${options.activeNav === 'audit' ? 'active' : ''}">Nhật ký</a>
       <button onclick="triggerRssFetch()" class="btn btn-warning" style="font-size:0.8rem; padding:4px 10px;">⚡ Lấy tin RSS ngay</button>

@@ -547,15 +547,20 @@ export function createApp() {
     );
   });
 
-  // Queue View
+  // Queue & Article Management View
   app.get('/admin/queue', async (c) => {
+    const status = c.req.query('status') || 'pending';
     const cat = c.req.query('cat') || '';
     const q = c.req.query('q') || '';
     const pendingCount = await getPendingCount(c.env);
 
-    let query = `SELECT * FROM articles WHERE status = 'pending'`;
+    let query = `SELECT * FROM articles WHERE 1=1`;
     const params: string[] = [];
 
+    if (status !== 'all') {
+      query += ` AND status = ?`;
+      params.push(status);
+    }
     if (cat) {
       query += ` AND category = ?`;
       params.push(cat);
@@ -565,17 +570,17 @@ export function createApp() {
       params.push(`%${q}%`, `%${q}%`, `%${q}%`);
     }
 
-    query += ` ORDER BY created_at DESC LIMIT 100`;
+    query += ` ORDER BY COALESCE(published_at, created_at) DESC LIMIT 100`;
 
     const stmt = c.env.DB.prepare(query);
     const boundStmt = params.length > 0 ? stmt.bind(...params) : stmt;
     const articlesRes = await boundStmt.all<Article>();
 
-    const queueHtml = renderQueueView(articlesRes.results || [], cat, q);
+    const queueHtml = renderQueueView(articlesRes.results || [], cat, q, status);
 
     return c.html(
       renderAdminLayout(queueHtml, {
-        title: 'Hàng chờ biên tập duyệt bài',
+        title: status === 'published' ? 'Quản lý bài đã xuất bản' : 'Quản lý bài viết',
         activeNav: 'queue',
         pendingCount,
       })
@@ -870,8 +875,8 @@ export function createApp() {
     return c.json({ success: true, message: 'Đã từ chối bản nháp' });
   });
 
-  // Delete Article API
-  app.delete('/api/admin/articles/:id', async (c) => {
+  // Delete Article API (both DELETE and POST methods supported)
+  const deleteArticleHandler = async (c: any) => {
     const id = c.req.param('id');
     const actor = c.get('actor') || 'admin';
     const nowIso = new Date().toISOString();
@@ -892,8 +897,11 @@ export function createApp() {
       )
       .run();
 
-    return c.json({ success: true, message: 'Đã xóa bài viết' });
-  });
+    return c.json({ success: true, message: 'Đã xóa bài viết thành công' });
+  };
+
+  app.delete('/api/admin/articles/:id', deleteArticleHandler);
+  app.post('/api/admin/articles/:id/delete', deleteArticleHandler);
 
   // Feed Management APIs
   app.post('/api/admin/feeds', async (c) => {
