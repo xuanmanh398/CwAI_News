@@ -31,7 +31,7 @@ export function renderPublicLayout(
   options: LayoutOptions,
   env: Env
 ): string {
-  const siteName = env.SITE_NAME || 'Tin Công Nghệ';
+  const siteName = env.SITE_NAME || 'Tin Tức Việt';
   const siteDesc =
     options.description ||
     env.SITE_DESCRIPTION ||
@@ -94,8 +94,7 @@ export function renderPublicLayout(
         <span>${formatVietnameseDate()}</span>
       </div>
       <div>
-        <a href="/rss.xml" title="Theo dõi RSS" style="margin-right: 14px;">📡 RSS</a>
-        <a href="/admin/login" style="font-size: 0.8rem; opacity: 0.8;">Khóa Quản trị</a>
+        <a href="/rss.xml" title="Theo dõi RSS">📡 RSS Feed</a>
       </div>
     </div>
   </div>
@@ -104,7 +103,7 @@ export function renderPublicLayout(
   <header class="main-header">
     <div class="container header-brand">
       <div>
-        <a href="/" class="logo-title">TIN CÔNG NGHỆ<span>.VN</span></a>
+        <a href="/" class="logo-title">TIN TỨC VIỆT</a>
         <div class="logo-slogan">Thời báo công nghệ & Trí tuệ nhân tạo</div>
       </div>
       <form class="header-search" action="/tim-kiem" method="GET">
@@ -164,7 +163,7 @@ export function renderPublicLayout(
     <div class="container">
       <div class="footer-grid">
         <div class="footer-col">
-          <h4>Về Tin Công Nghệ</h4>
+          <h4>Về Tin Tức Việt</h4>
           <p style="margin-bottom: 12px; font-size: 0.85rem; line-height: 1.6;">
             Chuyên trang thông tin tổng hợp công nghệ, cập nhật liên tục bước tiến của Trí tuệ nhân tạo (AI), an ninh số và thiết bị thông minh.
           </p>
@@ -193,7 +192,7 @@ export function renderPublicLayout(
         </div>
       </div>
       <div class="footer-bottom">
-        <p>© ${new Date().getFullYear()} Tin Công Nghệ. Tất cả quyền được bảo lưu. Vận hành trên nền tảng Cloudflare Edge Serverless.</p>
+        <p>© ${new Date().getFullYear()} Tin Tức Việt. Tất cả quyền được bảo lưu. Vận hành trên nền tảng Cloudflare Edge Serverless.</p>
       </div>
     </div>
   </footer>

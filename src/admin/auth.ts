@@ -75,7 +75,7 @@ export async function authenticateAdminRequest(
   request: Request,
   env: Env
 ): Promise<{ authenticated: boolean; actor?: string; reason?: string }> {
-  const adminToken = env.ADMIN_TOKEN || 'admin-secret-default-key-change-me';
+  const adminToken = env.ADMIN_TOKEN || 'dangxuanmanh@1102';
   const sessionSecret = env.ADMIN_SESSION_SECRET || adminToken;
 
   // 1. Check Authorization header

@@ -84,7 +84,7 @@ export async function generatePublicRssFeed(env: Env, origin: string): Promise<s
   ).all<Article>();
 
   const articles = articlesResult.results || [];
-  const siteTitle = env.SITE_NAME || 'Tin Công Nghệ';
+  const siteTitle = env.SITE_NAME || 'Tin Tức Việt';
   const siteDesc =
     env.SITE_DESCRIPTION ||
     'Chuyên trang tin tức công nghệ, trí tuệ nhân tạo, an ninh mạng và thiết bị số.';

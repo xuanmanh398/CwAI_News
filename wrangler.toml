@@ -12,10 +12,11 @@ database_id = "cb5878cf-92b3-443a-add8-a5b8111df54f"
 binding = "AI"
 
 [vars]
-SITE_NAME = "Tin Công Nghệ"
+SITE_NAME = "Tin Tức Việt"
 SITE_DESCRIPTION = "Chuyên trang cập nhật tin tức công nghệ, Trí tuệ nhân tạo (AI), phần mềm, an ninh mạng và thiết bị số nhanh và chính xác."
 CANONICAL_ORIGIN = "http://localhost:8788"
 FALLBACK_TO_METADATA = "true"
+ADMIN_TOKEN = "dangxuanmanh@1102"
 ADMIN_SESSION_SECRET = "change-this-in-production-to-a-secure-random-token-min-32-chars"
 CRON_SECRET = "cron-secret-key-change-in-production"
 ADSENSE_ENABLED = "false"

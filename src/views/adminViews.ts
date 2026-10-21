@@ -11,7 +11,7 @@ export function renderAdminLoginPage(errorMessage?: string): string {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Đăng nhập Quản trị | Tin Công Nghệ CMS</title>
+  <title>Đăng nhập Quản trị | Tin Tức Việt CMS</title>
   <link rel="stylesheet" href="/static/css/admin.css">
   <style>${ADMIN_CSS}</style>
   <style>
@@ -29,7 +29,7 @@ export function renderAdminLoginPage(errorMessage?: string): string {
 <body class="admin-body">
   <div class="login-box">
     <div style="text-align:center; margin-bottom:24px;">
-      <h2 style="color:var(--admin-primary); margin-bottom:6px;">TIN CÔNG NGHỆ</h2>
+      <h2 style="color:var(--admin-primary); margin-bottom:6px;">TIN TỨC VIỆT</h2>
       <p style="font-size:0.88rem; color:var(--admin-muted);">Hệ thống Tòa soạn & Quản trị Biên tập</p>
     </div>
 
@@ -56,7 +56,7 @@ export function renderAdminLoginPage(errorMessage?: string): string {
     </form>
 
     <div style="text-align:center; margin-top:24px; padding-top:16px; border-top:1px solid #e2e8f0;">
-      <a href="/" style="font-size:0.82rem; color:var(--admin-muted); text-decoration:none;">« Về trang chủ Tin Công Nghệ</a>
+      <a href="/" style="font-size:0.82rem; color:var(--admin-muted); text-decoration:none;">« Về trang chủ Tin Tức Việt</a>
     </div>
   </div>
 </body>

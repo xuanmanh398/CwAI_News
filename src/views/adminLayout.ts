@@ -24,7 +24,7 @@ export function renderAdminLayout(
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>${escapeHtml(options.title)} | Tin Công Nghệ CMS</title>
+  <title>${escapeHtml(options.title)} | Tin Tức Việt CMS</title>
   <link rel="stylesheet" href="/static/css/admin.css">
   <style>${ADMIN_CSS}</style>
 </head>
@@ -33,7 +33,7 @@ export function renderAdminLayout(
   <!-- Header -->
   <header class="admin-header">
     <div class="admin-brand">
-      <h1>Tin Công Nghệ</h1>
+      <h1>Tin Tức Việt</h1>
       <span>Tòa Soạn AI</span>
     </div>
     <nav class="admin-nav">

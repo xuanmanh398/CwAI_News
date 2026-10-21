@@ -73,7 +73,7 @@ export function renderArticlePage(
     <div class="ai-editorial-badge">
       <span style="font-size: 1.2rem;">🤖</span>
       <div>
-        <strong>Minh bạch biên tập:</strong> Bản tin được ban biên tập <em>Tin Công Nghệ</em> tổng hợp và biên soạn với sự hỗ trợ của trí tuệ nhân tạo (AI), dữ kiện được đối chiếu từ nguồn tin gốc.
+        <strong>Minh bạch biên tập:</strong> Bản tin được ban biên tập <em>Tin Tức Việt</em> tổng hợp và biên soạn với sự hỗ trợ của trí tuệ nhân tạo (AI), dữ kiện được đối chiếu từ nguồn tin gốc.
       </div>
     </div>
 

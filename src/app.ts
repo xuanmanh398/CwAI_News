@@ -176,7 +176,7 @@ export function createApp() {
     const fullHtml = renderPublicLayout(
       homeHtml,
       {
-        title: 'Tin Công Nghệ — Thời báo Trí tuệ nhân tạo & Công nghệ số',
+        title: 'Tin Tức Việt — Thời báo Trí tuệ nhân tạo & Công nghệ số',
         description: c.env.SITE_DESCRIPTION,
         canonicalUrl: origin,
         breakingNews: breaking,
@@ -223,7 +223,7 @@ export function createApp() {
       .all<Article>();
     const relatedArticles = relatedRes.results || [];
 
-    const jsonLd = generateNewsArticleJsonLd(article, origin, c.env.SITE_NAME || 'Tin Công Nghệ');
+    const jsonLd = generateNewsArticleJsonLd(article, origin, c.env.SITE_NAME || 'Tin Tức Việt');
     const articleHtml = renderArticlePage(article, relatedArticles, c.env, origin);
 
     const fullHtml = renderPublicLayout(
@@ -284,7 +284,7 @@ export function createApp() {
       catHtml,
       {
         title: `Tin ${categoryName} mới nhất`,
-        description: `Cập nhật tin tức mới nhất về ${categoryName} tại Tin Công Nghệ.`,
+        description: `Cập nhật tin tức mới nhất về ${categoryName} tại Tin Tức Việt.`,
         canonicalUrl: `${origin}/chuyen-muc/${catSlug}`,
         activeCategory: categoryName,
         jsonLd: breadcrumbsJson,
@@ -420,7 +420,7 @@ export function createApp() {
       token = (body.token as string) || '';
     }
 
-    const adminToken = c.env.ADMIN_TOKEN || 'admin-secret-default-key-change-me';
+    const adminToken = c.env.ADMIN_TOKEN || 'dangxuanmanh@1102';
     const sessionSecret = c.env.ADMIN_SESSION_SECRET || adminToken;
 
     if (!timingSafeEqual(token.trim(), adminToken)) {

@@ -13,11 +13,10 @@ export function renderHomePage(
   if (articles.length === 0) {
     return `
 <div style="background:#fff; padding:60px 20px; border-radius:8px; text-align:center; margin:40px 0; border:1px solid #e5e7eb;">
-  <h2 style="font-size:1.6rem; color:#1f2937; margin-bottom:12px;">Chào mừng bạn đến với Tin Công Nghệ</h2>
-  <p style="color:#6b7280; max-width:600px; margin:0 auto 24px;">
-    Hệ thống biên tập tin tức công nghệ tự động hóa đang trong quá trình nạp tin từ các nguồn RSS. Các bài viết mới sẽ xuất hiện tại đây sau khi được biên tập viên kiểm duyệt và xuất bản.
+  <h2 style="font-size:1.6rem; color:#1f2937; margin-bottom:12px;">Chào mừng bạn đến với Tin Tức Việt</h2>
+  <p style="color:#6b7280; max-width:600px; margin:0 auto;">
+    Hệ thống đang cập nhật các bản tin công nghệ mới nhất từ các cơ quan báo chí chính thống. Quý độc giả vui lòng quay lại sau ít phút.
   </p>
-  <a href="/admin/login" style="background:#b31217; color:#fff; padding:10px 24px; border-radius:6px; font-weight:600; text-decoration:none; display:inline-block;">Vào Bảng Quản trị & Duyệt bài</a>
 </div>
     `;
   }
@@ -178,7 +177,7 @@ export function renderHomePage(
     <div class="sidebar-widget" style="background:#f8fafc; border:1px solid #cbd5e1;">
       <h3 class="widget-title" style="border-bottom-color:#b31217;">Nguyên tắc minh bạch</h3>
       <p style="font-size:0.85rem; color:#4b5563; line-height:1.6; margin-bottom:12px;">
-        Mọi bản tin trên Tin Công Nghệ được tổng hợp từ nguồn báo chí uy tín với sự hỗ trợ của trí tuệ nhân tạo (AI) và <strong>luôn được biên tập viên kiểm tra trước khi xuất bản</strong>.
+        Mọi bản tin trên Tin Tức Việt được tổng hợp từ nguồn báo chí uy tín với sự hỗ trợ của trí tuệ nhân tạo (AI) và <strong>luôn được biên tập viên kiểm tra trước khi xuất bản</strong>.
       </p>
       <a href="/nguyen-tac-bien-tap" style="font-size:0.82rem; font-weight:700; color:#b31217;">Tìm hiểu quy trình biên tập »</a>
     </div>
