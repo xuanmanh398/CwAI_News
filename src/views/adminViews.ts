@@ -3,6 +3,7 @@
 
 import { Article, Feed, IngestionRun, AuditLog } from '../types/index.js';
 import { escapeHtml } from '../security/sanitize.js';
+import { ADMIN_CSS } from './styles.js';
 
 export function renderAdminLoginPage(errorMessage?: string): string {
   return `<!DOCTYPE html>
@@ -12,6 +13,7 @@ export function renderAdminLoginPage(errorMessage?: string): string {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Đăng nhập Quản trị | Tin Công Nghệ CMS</title>
   <link rel="stylesheet" href="/static/css/admin.css">
+  <style>${ADMIN_CSS}</style>
   <style>
     .login-box {
       max-width: 420px;

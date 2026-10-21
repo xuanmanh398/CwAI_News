@@ -4,6 +4,7 @@
 import { Env } from '../types/index.js';
 import { renderAdSenseHeaderScript, renderAdSlot } from '../ads/adsense.js';
 import { escapeHtml } from '../security/sanitize.js';
+import { STYLE_CSS } from './styles.js';
 
 export interface LayoutOptions {
   title: string;
@@ -75,6 +76,7 @@ export function renderPublicLayout(
 
   <!-- Stylesheet -->
   <link rel="stylesheet" href="/static/css/style.css">
+  <style>${STYLE_CSS}</style>
 
   <!-- AdSense Script (conditional) -->
   ${renderAdSenseHeaderScript(env)}

@@ -54,6 +54,7 @@ import { generateAdsTxt } from './ads/adsense.js';
 import { validateSafeUrl } from './security/ssrf.js';
 import { sanitizeHtmlContent, escapeHtml } from './security/sanitize.js';
 import { runIngestionPipeline } from './ingestion/pipeline.js';
+import { STYLE_CSS, ADMIN_CSS } from './views/styles.js';
 
 export function createApp() {
   const app = new Hono<{ Bindings: Env; Variables: { actor?: string } }>();
@@ -91,6 +92,21 @@ export function createApp() {
   // ==========================================
   // PUBLIC SEO & FEED ENDPOINTS
   // ==========================================
+
+  // Static Stylesheets Routes
+  app.get('/static/css/style.css', (c) => {
+    return c.text(STYLE_CSS, 200, {
+      'Content-Type': 'text/css; charset=utf-8',
+      'Cache-Control': 'public, max-age=86400',
+    });
+  });
+
+  app.get('/static/css/admin.css', (c) => {
+    return c.text(ADMIN_CSS, 200, {
+      'Content-Type': 'text/css; charset=utf-8',
+      'Cache-Control': 'public, max-age=86400',
+    });
+  });
 
   // Sitemap.xml (Dynamic)
   app.get('/sitemap.xml', async (c) => {

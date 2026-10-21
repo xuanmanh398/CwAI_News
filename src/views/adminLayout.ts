@@ -2,6 +2,7 @@
 // Secure Admin CMS Layout
 
 import { escapeHtml } from '../security/sanitize.js';
+import { ADMIN_CSS } from './styles.js';
 
 export interface AdminLayoutOptions {
   title: string;
@@ -25,6 +26,7 @@ export function renderAdminLayout(
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${escapeHtml(options.title)} | Tin Công Nghệ CMS</title>
   <link rel="stylesheet" href="/static/css/admin.css">
+  <style>${ADMIN_CSS}</style>
 </head>
 <body class="admin-body">
 
