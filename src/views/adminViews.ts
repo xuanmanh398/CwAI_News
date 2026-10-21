@@ -117,6 +117,14 @@ export function renderCreateArticleView(): string {
           </div>
 
           <div class="form-group">
+            <label for="image_url">Ảnh đại diện bài viết (URL ảnh)</label>
+            <input type="url" id="image_url" name="image_url" placeholder="https://example.com/image.jpg" oninput="previewCreateImage(this.value)">
+            <div id="create_image_preview_box" style="margin-top:8px; display:none;">
+              <img id="create_image_preview_img" src="" alt="Xem trước ảnh" style="max-height:160px; border-radius:6px; border:1px solid #cbd5e1; object-fit:cover;">
+            </div>
+          </div>
+
+          <div class="form-group">
             <label for="content">Nội dung chi tiết bài viết (HTML) (*)</label>
             <textarea id="content" name="content" rows="18" placeholder="<p>Đoạn mở đầu...</p>
 <h3>1. Chi tiết sự kiện</h3>
@@ -178,6 +186,7 @@ export function renderCreateArticleView(): string {
     const source_url = document.getElementById('source_url').value.trim();
     const seo_title = document.getElementById('seo_title').value.trim();
     const seo_description = document.getElementById('seo_description').value.trim();
+    const image_url = document.getElementById('image_url').value.trim();
 
     if (!title || !content || !excerpt) {
       alert('Vui lòng điền đầy đủ Tiêu đề, Sapo và Nội dung bài viết!');
@@ -192,7 +201,7 @@ export function renderCreateArticleView(): string {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          title, excerpt, content, category, tags, source_name, source_url, seo_title, seo_description, status
+          title, excerpt, content, category, tags, source_name, source_url, seo_title, seo_description, image_url, status
         })
       });
       const data = await res.json();
@@ -204,6 +213,17 @@ export function renderCreateArticleView(): string {
       }
     } catch (err) {
       alert('Lỗi kết nối: ' + err.message);
+    }
+  }
+
+  function previewCreateImage(url) {
+    const box = document.getElementById('create_image_preview_box');
+    const img = document.getElementById('create_image_preview_img');
+    if (url && url.startsWith('http')) {
+      img.src = url;
+      box.style.display = 'block';
+    } else {
+      box.style.display = 'none';
     }
   }
 </script>
@@ -398,12 +418,17 @@ export function renderQueueView(
                   return `
             <tr>
               <td>
-                <div style="font-weight:700; font-size:0.95rem; margin-bottom:4px;">
-                  <a href="/admin/edit/${art.id}" style="color:var(--admin-primary);">${escapeHtml(art.title)}</a>
-                </div>
-                <div style="font-size:0.8rem; color:#64748b;">
-                  Nguồn: <strong>${escapeHtml(art.source_name)}</strong> 
-                  ${art.source_url ? `• <a href="${escapeHtml(art.source_url)}" target="_blank" rel="noopener noreferrer" style="color:var(--admin-accent);">Xem bài gốc ↗</a>` : ''}
+                <div style="display:flex; gap:12px; align-items:flex-start;">
+                  ${art.image_url ? `<img src="${escapeHtml(art.image_url)}" alt="" style="width:64px; height:48px; object-fit:cover; border-radius:4px; flex-shrink:0; border:1px solid #e2e8f0;">` : ''}
+                  <div style="flex:1;">
+                    <div style="font-weight:700; font-size:0.95rem; margin-bottom:4px;">
+                      <a href="/admin/edit/${art.id}" style="color:var(--admin-primary);">${escapeHtml(art.title)}</a>
+                    </div>
+                    <div style="font-size:0.8rem; color:#64748b;">
+                      Nguồn: <strong>${escapeHtml(art.source_name)}</strong> 
+                      ${art.source_url ? `• <a href="${escapeHtml(art.source_url)}" target="_blank" rel="noopener noreferrer" style="color:var(--admin-accent);">Xem bài gốc ↗</a>` : ''}
+                    </div>
+                  </div>
                 </div>
               </td>
               <td><span class="badge badge-ai">${escapeHtml(art.category)}</span></td>
@@ -568,6 +593,14 @@ export function renderEditorView(article: Article): string {
           </div>
 
           <div class="form-group">
+            <label for="image_url">Ảnh đại diện bài viết (URL ảnh)</label>
+            <input type="url" id="image_url" name="image_url" value="${escapeHtml(article.image_url || '')}" placeholder="https://..." oninput="previewEditImage(this.value)">
+            <div id="edit_image_preview_box" style="margin-top:8px; ${article.image_url ? 'display:block;' : 'display:none;'}">
+              <img id="edit_image_preview_img" src="${escapeHtml(article.image_url || '')}" alt="Xem trước ảnh" style="max-height:160px; border-radius:6px; border:1px solid #cbd5e1; object-fit:cover;">
+            </div>
+          </div>
+
+          <div class="form-group">
             <label for="content">Nội dung bài viết (HTML) (*)</label>
             <textarea id="content" name="content" rows="14" required>${escapeHtml(article.content)}</textarea>
             <small style="color:#64748b; font-size:0.75rem;">Hỗ trợ các thẻ: &lt;p&gt;, &lt;h3&gt;, &lt;ul&gt;, &lt;li&gt;, &lt;strong&gt;, &lt;em&gt;, &lt;blockquote&gt;</small>
@@ -649,10 +682,22 @@ export function renderEditorView(article: Article): string {
       excerpt: document.getElementById('excerpt').value.trim(),
       category: document.getElementById('category').value,
       tags: document.getElementById('tags').value.split(',').map(t => t.trim()).filter(Boolean),
+      image_url: document.getElementById('image_url').value.trim(),
       content: document.getElementById('content').value.trim(),
       seo_title: document.getElementById('seo_title').value.trim(),
       seo_description: document.getElementById('seo_description').value.trim()
     };
+  }
+
+  function previewEditImage(url) {
+    const box = document.getElementById('edit_image_preview_box');
+    const img = document.getElementById('edit_image_preview_img');
+    if (url && url.startsWith('http')) {
+      img.src = url;
+      box.style.display = 'block';
+    } else {
+      box.style.display = 'none';
+    }
   }
 
   async function saveDraft() {

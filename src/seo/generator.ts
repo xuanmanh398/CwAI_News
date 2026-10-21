@@ -144,6 +144,7 @@ export function generateNewsArticleJsonLd(article: Article, origin: string, site
     },
     headline: article.title,
     description: article.excerpt,
+    ...(article.image_url ? { image: [article.image_url] } : {}),
     datePublished: article.published_at || article.created_at,
     dateModified: article.updated_at || article.published_at || article.created_at,
     articleSection: article.category,

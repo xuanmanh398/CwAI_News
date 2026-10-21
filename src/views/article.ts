@@ -69,6 +69,16 @@ export function renderArticlePage(
       </div>
     </div>
 
+    ${
+      article.image_url
+        ? `
+    <!-- Featured Image -->
+    <div class="article-featured-image">
+      <img src="${escapeHtml(article.image_url)}" alt="${escapeHtml(article.title)}" loading="eager" />
+    </div>`
+        : ''
+    }
+
     <!-- Article Body -->
     <div class="article-body">
       ${article.content}

@@ -31,6 +31,7 @@ export interface Article {
   seo_title: string | null;
   seo_description: string | null;
   facts_to_verify: string | null;
+  image_url?: string | null;
 }
 
 export interface Feed {
@@ -74,6 +75,7 @@ export interface ParsedFeedItem {
   pubDate?: string;
   guid?: string;
   categories?: string[];
+  imageUrl?: string;
 }
 
 export interface AiDraftOutput {

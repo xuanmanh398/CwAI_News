@@ -41,6 +41,12 @@ export function renderHomePage(
 
     <!-- Top Featured Story -->
     <div class="hero-feature">
+      ${hero.image_url ? `
+      <div class="hero-image-wrap">
+        <a href="/bai-viet/${hero.slug}">
+          <img src="${escapeHtml(hero.image_url)}" alt="${escapeHtml(hero.title)}" class="hero-image" loading="eager" />
+        </a>
+      </div>` : ''}
       <div class="hero-feature-content">
         <span class="category-badge">${escapeHtml(hero.category)}</span>
         <h1 class="hero-title">
@@ -63,6 +69,10 @@ export function renderHomePage(
         .map(
           (art) => `
         <article class="news-card">
+          ${art.image_url ? `
+          <a href="/bai-viet/${art.slug}" class="news-card-thumb-wrap">
+            <img src="${escapeHtml(art.image_url)}" alt="${escapeHtml(art.title)}" class="news-card-thumb" loading="lazy" />
+          </a>` : ''}
           <div>
             <span class="category-badge">${escapeHtml(art.category)}</span>
             <h3><a href="/bai-viet/${art.slug}">${escapeHtml(art.title)}</a></h3>
@@ -99,6 +109,10 @@ export function renderHomePage(
             .map(
               (art) => `
             <article class="news-card">
+              ${art.image_url ? `
+              <a href="/bai-viet/${art.slug}" class="news-card-thumb-wrap">
+                <img src="${escapeHtml(art.image_url)}" alt="${escapeHtml(art.title)}" class="news-card-thumb" loading="lazy" />
+              </a>` : ''}
               <div>
                 <h3><a href="/bai-viet/${art.slug}">${escapeHtml(art.title)}</a></h3>
                 <p>${escapeHtml(art.excerpt.slice(0, 110))}...</p>
@@ -128,13 +142,19 @@ export function renderHomePage(
       <div style="display:flex; flex-direction:column; gap:16px;">
         ${remaining.slice(0, 6).map(
           (art) => `
-          <div style="background:#fff; border:1px solid #e5e7eb; border-radius:6px; padding:16px; display:flex; flex-direction:column; gap:6px;">
-            <div style="display:flex; align-items:center; gap:8px;">
-              <span class="category-badge" style="margin-bottom:0;">${escapeHtml(art.category)}</span>
-              <span style="font-size:0.8rem; color:#6b7280;">📅 ${art.published_at ? new Date(art.published_at).toLocaleDateString('vi-VN') : ''}</span>
+          <div class="stream-card">
+            ${art.image_url ? `
+            <a href="/bai-viet/${art.slug}" class="stream-card-thumb-wrap">
+              <img src="${escapeHtml(art.image_url)}" alt="${escapeHtml(art.title)}" class="stream-card-thumb" loading="lazy" />
+            </a>` : ''}
+            <div class="stream-card-content">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span class="category-badge" style="margin-bottom:0;">${escapeHtml(art.category)}</span>
+                <span style="font-size:0.8rem; color:#6b7280;">📅 ${art.published_at ? new Date(art.published_at).toLocaleDateString('vi-VN') : ''}</span>
+              </div>
+              <h3 style="font-size:1.15rem; font-weight:700;"><a href="/bai-viet/${art.slug}">${escapeHtml(art.title)}</a></h3>
+              <p style="font-size:0.92rem; color:#4b5563;">${escapeHtml(art.excerpt)}</p>
             </div>
-            <h3 style="font-size:1.15rem; font-weight:700;"><a href="/bai-viet/${art.slug}">${escapeHtml(art.title)}</a></h3>
-            <p style="font-size:0.92rem; color:#4b5563;">${escapeHtml(art.excerpt)}</p>
           </div>
         `
         ).join('')}

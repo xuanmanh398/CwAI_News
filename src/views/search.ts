@@ -44,16 +44,26 @@ export function renderSearchPage(
         ${articles
           .map(
             (art) => `
-          <article style="background:#fff; border:1px solid #e5e7eb; border-radius:6px; padding:20px; display:flex; flex-direction:column; gap:8px;">
-            <div style="display:flex; align-items:center; gap:10px;">
-              <span class="category-badge" style="margin-bottom:0;">${escapeHtml(art.category)}</span>
-              <span style="font-size:0.8rem; color:#6b7280;">📅 ${art.published_at ? new Date(art.published_at).toLocaleDateString('vi-VN') : ''}</span>
-              <span style="font-size:0.8rem; color:#6b7280;">• Nguồn: ${escapeHtml(art.source_name)}</span>
+          <article class="category-article-card">
+            ${
+              art.image_url
+                ? `
+            <a href="/bai-viet/${art.slug}" class="category-card-thumb-wrap">
+              <img src="${escapeHtml(art.image_url)}" alt="${escapeHtml(art.title)}" class="category-card-thumb" loading="lazy" />
+            </a>`
+                : ''
+            }
+            <div class="category-card-content">
+              <div style="display:flex; align-items:center; gap:10px;">
+                <span class="category-badge" style="margin-bottom:0;">${escapeHtml(art.category)}</span>
+                <span style="font-size:0.8rem; color:#6b7280;">📅 ${art.published_at ? new Date(art.published_at).toLocaleDateString('vi-VN') : ''}</span>
+                <span style="font-size:0.8rem; color:#6b7280;">• Nguồn: ${escapeHtml(art.source_name)}</span>
+              </div>
+              <h3 style="font-size:1.25rem; font-weight:700; line-height:1.4;">
+                <a href="/bai-viet/${art.slug}">${escapeHtml(art.title)}</a>
+              </h3>
+              <p style="font-size:0.95rem; color:#4b5563; line-height:1.6;">${escapeHtml(art.excerpt)}</p>
             </div>
-            <h3 style="font-size:1.25rem; font-weight:700; line-height:1.4;">
-              <a href="/bai-viet/${art.slug}">${escapeHtml(art.title)}</a>
-            </h3>
-            <p style="font-size:0.95rem; color:#4b5563; line-height:1.6;">${escapeHtml(art.excerpt)}</p>
           </article>
         `
           )

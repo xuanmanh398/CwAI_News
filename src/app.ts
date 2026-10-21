@@ -239,6 +239,7 @@ export function createApp() {
         description: article.seo_description || article.excerpt,
         canonicalUrl: `${origin}/bai-viet/${article.slug}`,
         ogType: 'article',
+        ogImage: article.image_url || undefined,
         jsonLd,
         activeCategory: article.category,
         breakingNews: breaking,
@@ -695,6 +696,7 @@ export function createApp() {
     const nowIso = new Date().toISOString();
     const publishedAt = status === 'published' ? nowIso : null;
     const reviewedBy = status === 'published' ? actor : null;
+    const imageUrl = body.image_url?.trim() || null;
 
     const normTitle = normalizeTitleForDeduplication(safeTitle);
     const contentHash = await computeSha256(normTitle + '_' + uniqueSuffix);
@@ -705,8 +707,8 @@ export function createApp() {
           id, slug, title, original_title, excerpt, content, category, tags,
           source_name, source_url, source_published_at, created_at, updated_at,
           published_at, status, content_hash, ai_generated, reviewed_by,
-          seo_title, seo_description, facts_to_verify
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, ?, ?, ?, NULL)`
+          seo_title, seo_description, facts_to_verify, image_url
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, ?, ?, ?, NULL, ?)`
       )
         .bind(
           articleId,
@@ -727,7 +729,8 @@ export function createApp() {
           contentHash,
           reviewedBy,
           seoTitle,
-          seoDesc
+          seoDesc,
+          imageUrl
         )
         .run();
 
@@ -769,15 +772,16 @@ export function createApp() {
     const tagsJson = JSON.stringify(body.tags || []);
     const seoTitle = body.seo_title?.trim() || safeTitle;
     const seoDesc = body.seo_description?.trim() || safeExcerpt;
+    const imageUrl = body.image_url !== undefined ? (body.image_url ? body.image_url.trim() : null) : null;
     const nowIso = new Date().toISOString();
 
     await c.env.DB.prepare(
       `UPDATE articles 
        SET title = ?, excerpt = ?, content = ?, category = ?, tags = ?, 
-           seo_title = ?, seo_description = ?, updated_at = ?
+           seo_title = ?, seo_description = ?, updated_at = ?, image_url = ?
        WHERE id = ?`
     )
-      .bind(safeTitle, safeExcerpt, safeContent, category, tagsJson, seoTitle, seoDesc, nowIso, id)
+      .bind(safeTitle, safeExcerpt, safeContent, category, tagsJson, seoTitle, seoDesc, nowIso, imageUrl, id)
       .run();
 
     // Audit log

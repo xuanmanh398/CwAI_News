@@ -52,6 +52,42 @@ function extractLink(node: any): string {
   return '';
 }
 
+function extractImageUrl(item: any, rawDesc: string, rawContent: string): string | undefined {
+  try {
+    // 1. Enclosure tag (e.g. VnExpress, Thanh Nien, Dan Tri)
+    if (item.enclosure) {
+      const enc = Array.isArray(item.enclosure) ? item.enclosure[0] : item.enclosure;
+      const url = enc?.['@_url'];
+      if (url && typeof url === 'string') {
+        return url.trim();
+      }
+    }
+
+    // 2. Media:content or media:thumbnail
+    const media = item['media:content'] || item['media:thumbnail'];
+    if (media) {
+      const med = Array.isArray(media) ? media[0] : media;
+      const url = med?.['@_url'] || med?.['@_href'];
+      if (url && typeof url === 'string') {
+        return url.trim();
+      }
+    }
+
+    // 3. Img tag in description or content CDATA
+    const combined = `${rawDesc || ''} ${rawContent || ''}`;
+    const match = combined.match(/<img[^>]+src\s*=\s*['"]([^'"]+)['"]/i);
+    if (match && match[1]) {
+      const src = match[1].trim();
+      if (src.startsWith('http') && !src.includes('1x1') && !src.includes('pixel')) {
+        return src;
+      }
+    }
+  } catch {
+    // ignore
+  }
+  return undefined;
+}
+
 export function parseXmlFeed(xmlString: string, maxItems: number = 10): FeedFetchResult {
   try {
     if (!xmlString || typeof xmlString !== 'string' || xmlString.trim().length === 0) {
@@ -88,6 +124,7 @@ export function parseXmlFeed(xmlString: string, maxItems: number = 10): FeedFetc
         if (title && link) {
           const cleanTitle = decodeHtmlEntities(title.trim()).normalize('NFC');
           const cleanDesc = decodeHtmlEntities(stripHtmlToPlainText(rawDesc || content || '')).slice(0, 500).normalize('NFC');
+          const imageUrl = extractImageUrl(item, rawDesc, content);
           items.push({
             title: cleanTitle,
             link: link.trim(),
@@ -96,6 +133,7 @@ export function parseXmlFeed(xmlString: string, maxItems: number = 10): FeedFetc
             pubDate: pubDate ? pubDate.trim() : undefined,
             guid: guid || link,
             categories,
+            imageUrl,
           });
         }
       }
@@ -129,6 +167,7 @@ export function parseXmlFeed(xmlString: string, maxItems: number = 10): FeedFetc
         if (title && link) {
           const cleanTitle = decodeHtmlEntities(title.trim()).normalize('NFC');
           const cleanSummary = decodeHtmlEntities(stripHtmlToPlainText(rawSummary)).slice(0, 500).normalize('NFC');
+          const imageUrl = extractImageUrl(entry, rawSummary, '');
           items.push({
             title: cleanTitle,
             link: link.trim(),
@@ -136,6 +175,7 @@ export function parseXmlFeed(xmlString: string, maxItems: number = 10): FeedFetc
             pubDate: pubDate ? pubDate.trim() : undefined,
             guid: guid || link,
             categories,
+            imageUrl,
           });
         }
       }

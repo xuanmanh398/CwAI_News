@@ -184,8 +184,8 @@ export async function runIngestionPipeline(
             id, slug, title, original_title, excerpt, content, category, tags,
             source_name, source_url, source_published_at, created_at, updated_at,
             published_at, status, content_hash, ai_generated, reviewed_by,
-            seo_title, seo_description, facts_to_verify
-          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, 'pending', ?, ?, NULL, ?, ?, ?)`
+            seo_title, seo_description, facts_to_verify, image_url
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, 'pending', ?, ?, NULL, ?, ?, ?, ?)`
         )
           .bind(
             articleId,
@@ -205,7 +205,8 @@ export async function runIngestionPipeline(
             aiUsed ? 1 : 0,
             draft.seoTitle,
             draft.seoDescription,
-            draft.factsToVerify || null
+            draft.factsToVerify || null,
+            item.imageUrl || null
           )
           .run();
 
