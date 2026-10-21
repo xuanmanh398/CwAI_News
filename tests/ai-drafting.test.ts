@@ -24,7 +24,7 @@ describe('AI Drafting & Fallback Pipeline', () => {
     expect(draft.excerpt).toContain('Chip Willow');
     expect(draft.suggestedCategory).toBe('Thiết bị');
     expect(draft.factsToVerify).toContain('Cần xác minh');
-    expect(draft.content).toContain('Ghi chú biên tập');
+    expect(draft.content).toContain('Chi tiết và bối cảnh phát triển');
   });
 
   it('Hoạt động dự phòng khi Workers AI ném ngoại lệ (network timeout / rate limit)', async () => {

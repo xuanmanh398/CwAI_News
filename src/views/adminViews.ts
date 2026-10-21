@@ -63,6 +63,153 @@ export function renderAdminLoginPage(errorMessage?: string): string {
 </html>`;
 }
 
+export function renderCreateArticleView(): string {
+  const categories = [
+    'Trí tuệ nhân tạo (AI)',
+    'Phần mềm',
+    'An ninh mạng',
+    'Thiết bị',
+    'Công nghệ mới',
+  ];
+
+  return `
+<div>
+  <div style="margin-bottom:16px;">
+    <a href="/admin" style="color:var(--admin-primary); font-weight:600; text-decoration:none;">« Quay lại Bảng điều khiển</a>
+  </div>
+
+  <div class="editor-grid">
+    <div>
+      <div class="editor-card">
+        <h2 style="font-size:1.3rem; margin-bottom:20px; color:var(--admin-primary);">✍️ Soạn thảo bài viết mới (Thủ công)</h2>
+
+        <form id="createForm">
+          <div class="form-group">
+            <label for="title">Tiêu đề bài viết (*)</label>
+            <input type="text" id="title" name="title" placeholder="Nhập tiêu đề hấp dẫn, chuẩn mực..." required autofocus>
+          </div>
+
+          <div class="form-group">
+            <label for="excerpt">Sapo / Đoạn mở đầu tóm tắt (*)</label>
+            <textarea id="excerpt" name="excerpt" rows="3" placeholder="Đoạn văn 2-3 câu nêu bật thông điệp quan trọng nhất..." required></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="category">Chuyên mục (*)</label>
+            <select id="category" name="category" required>
+              ${categories.map((cat) => `<option value="${cat}">${cat}</option>`).join('')}
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="tags">Từ khóa / Thẻ phân loại (ngăn cách bởi dấu phẩy)</label>
+            <input type="text" id="tags" name="tags" placeholder="AI, Công nghệ, Phần mềm...">
+          </div>
+
+          <div class="form-group">
+            <label for="source_name">Tác giả / Tên nguồn</label>
+            <input type="text" id="source_name" name="source_name" value="Ban biên tập Tin Tức Việt" required>
+          </div>
+
+          <div class="form-group">
+            <label for="source_url">Link bài gốc / Tài liệu tham khảo (nếu có)</label>
+            <input type="url" id="source_url" name="source_url" placeholder="https://...">
+          </div>
+
+          <div class="form-group">
+            <label for="content">Nội dung chi tiết bài viết (HTML) (*)</label>
+            <textarea id="content" name="content" rows="18" placeholder="<p>Đoạn mở đầu...</p>
+<h3>1. Chi tiết sự kiện</h3>
+<p>Nội dung phân tích...</p>
+<ul>
+  <li>Điểm nổi bật 1</li>
+  <li>Điểm nổi bật 2</li>
+</ul>
+<h3>2. Đánh giá và ý nghĩa</h3>
+<p>Nhận định chuyên môn...</p>" required></textarea>
+            <small style="color:#64748b; font-size:0.75rem;">Hỗ trợ các thẻ HTML: &lt;p&gt;, &lt;h3&gt;, &lt;ul&gt;, &lt;li&gt;, &lt;strong&gt;, &lt;em&gt;, &lt;blockquote&gt;</small>
+          </div>
+
+          <!-- SEO Section -->
+          <div style="margin-top:24px; padding-top:16px; border-top:1px solid #e2e8f0;">
+            <h4 style="margin-bottom:12px; font-size:1rem; color:#334155;">Tối ưu hóa SEO (Google Search)</h4>
+            <div class="form-group">
+              <label for="seo_title">Tiêu đề SEO (để trống sẽ lấy tiêu đề bài viết)</label>
+              <input type="text" id="seo_title" name="seo_title" placeholder="Tiêu đề hiển thị trên Google...">
+            </div>
+            <div class="form-group">
+              <label for="seo_description">Thẻ mô tả SEO (để trống sẽ lấy đoạn Sapo)</label>
+              <textarea id="seo_description" name="seo_description" rows="2" placeholder="Mô tả dưới 160 ký tự..."></textarea>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div style="display:flex; gap:12px; margin-top:24px; padding-top:16px; border-top:1px solid #e2e8f0;">
+            <button type="button" onclick="submitArticle('pending')" class="btn btn-secondary" style="font-size:0.95rem;">💾 Lưu bản nháp</button>
+            <button type="button" onclick="submitArticle('published')" class="btn btn-success" style="font-size:1rem; padding:10px 20px;">🚀 Xuất bản ngay</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Right Sidebar Guidance -->
+    <div>
+      <div class="editor-card">
+        <h3 style="font-size:1.05rem; margin-bottom:14px; color:#1e3a8a;">Tiêu chuẩn bài viết chuyên nghiệp</h3>
+        <ul style="font-size:0.85rem; line-height:1.8; color:#475569; padding-left:18px;">
+          <li><strong>Tiêu đề:</strong> Rõ ràng, đúng sự thật, không giật tít sai lệch.</li>
+          <li><strong>Sapo:</strong> Tóm lược nhanh 2-3 ý chính giúp người bận rộn nắm ngay cốt lõi.</li>
+          <li><strong>Thân bài:</strong> Nên chia thành 2-3 đề mục <code>&lt;h3&gt;</code> để bài viết thoáng mắt, dễ đọc trên di động.</li>
+          <li><strong>Nguồn:</strong> Ghi rõ tác giả hoặc nguồn tin tức nếu tổng hợp từ báo chí.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  async function submitArticle(status) {
+    const title = document.getElementById('title').value.trim();
+    const excerpt = document.getElementById('excerpt').value.trim();
+    const content = document.getElementById('content').value.trim();
+    const category = document.getElementById('category').value;
+    const tags = document.getElementById('tags').value.split(',').map(t => t.trim()).filter(Boolean);
+    const source_name = document.getElementById('source_name').value.trim() || 'Ban biên tập Tin Tức Việt';
+    const source_url = document.getElementById('source_url').value.trim();
+    const seo_title = document.getElementById('seo_title').value.trim();
+    const seo_description = document.getElementById('seo_description').value.trim();
+
+    if (!title || !content || !excerpt) {
+      alert('Vui lòng điền đầy đủ Tiêu đề, Sapo và Nội dung bài viết!');
+      return;
+    }
+
+    const actionText = status === 'published' ? 'XUẤT BẢN NGAY lên trang chủ' : 'LƯU VÀO BẢN NHÁP';
+    if (!confirm('Xác nhận bạn muốn ' + actionText + '?')) return;
+
+    try {
+      const res = await fetch('/api/admin/articles/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title, excerpt, content, category, tags, source_name, source_url, seo_title, seo_description, status
+        })
+      });
+      const data = await res.json();
+      if (data.success) {
+        alert(status === 'published' ? 'Đã xuất bản bài viết thành công lên trang chủ!' : 'Đã lưu bản nháp thành công vào Hàng chờ duyệt!');
+        window.location.href = status === 'published' ? '/' : '/admin/queue';
+      } else {
+        alert('Lỗi: ' + (data.message || 'Không thể tạo bài viết'));
+      }
+    } catch (err) {
+      alert('Lỗi kết nối: ' + err.message);
+    }
+  }
+</script>
+  `.trim();
+}
+
 export function renderDashboardView(data: {
   totalCount: number;
   pendingCount: number;

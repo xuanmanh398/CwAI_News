@@ -38,10 +38,16 @@ import {
   renderDashboardView,
   renderQueueView,
   renderEditorView,
+  renderCreateArticleView,
   renderFeedsView,
   renderAuditView,
   renderPreviewBanner,
 } from './views/adminViews.js';
+import {
+  generateSlug,
+  normalizeTitleForDeduplication,
+  computeSha256,
+} from './ingestion/deduplication.js';
 import {
   generateSitemapXml,
   generatePublicRssFeed,
@@ -530,6 +536,17 @@ export function createApp() {
     );
   });
 
+  // Create Article View (Manual Writing)
+  app.get('/admin/create', async (c) => {
+    const pendingCount = await getPendingCount(c.env);
+    return c.html(
+      renderAdminLayout(renderCreateArticleView(), {
+        title: 'Soạn thảo bài viết mới',
+        pendingCount,
+      })
+    );
+  });
+
   // Queue View
   app.get('/admin/queue', async (c) => {
     const cat = c.req.query('cat') || '';
@@ -646,6 +663,89 @@ export function createApp() {
   // ==========================================
   // ADMIN CMS APIs (EDIT, PUBLISH, REJECT, DELETE)
   // ==========================================
+
+  // Create Article API (Manual Article Creation)
+  app.post('/api/admin/articles/create', async (c) => {
+    const actor = c.get('actor') || 'admin';
+    const body = await c.req.json().catch(() => null);
+
+    if (!body || !body.title || !body.content || !body.excerpt) {
+      return c.json({ success: false, message: 'Vui lòng điền đầy đủ Tiêu đề, Sapo và Nội dung bài viết' }, 400);
+    }
+
+    const safeTitle = escapeHtml(body.title.trim());
+    const safeExcerpt = escapeHtml(body.excerpt.trim());
+    const safeContent = sanitizeHtmlContent(body.content);
+    const category = body.category?.trim() || 'Công nghệ mới';
+    const tagsJson = JSON.stringify(body.tags || []);
+    const sourceName = escapeHtml(body.source_name?.trim() || 'Ban biên tập Tin Tức Việt');
+    const sourceUrl = body.source_url?.trim() || `https://tin-cong-nghe-ai.pages.dev/bai-viet/${Date.now()}`;
+    const seoTitle = body.seo_title?.trim() || safeTitle;
+    const seoDesc = body.seo_description?.trim() || safeExcerpt;
+    const status = body.status === 'published' ? 'published' : 'pending';
+
+    const uniqueSuffix = Math.random().toString(36).substring(2, 8);
+    const slug = generateSlug(safeTitle, uniqueSuffix);
+    const articleId = `art_manual_${Date.now()}_${uniqueSuffix}`;
+    const nowIso = new Date().toISOString();
+    const publishedAt = status === 'published' ? nowIso : null;
+    const reviewedBy = status === 'published' ? actor : null;
+
+    const normTitle = normalizeTitleForDeduplication(safeTitle);
+    const contentHash = await computeSha256(normTitle + '_' + uniqueSuffix);
+
+    try {
+      await c.env.DB.prepare(
+        `INSERT INTO articles (
+          id, slug, title, original_title, excerpt, content, category, tags,
+          source_name, source_url, source_published_at, created_at, updated_at,
+          published_at, status, content_hash, ai_generated, reviewed_by,
+          seo_title, seo_description, facts_to_verify
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, ?, ?, ?, NULL)`
+      )
+        .bind(
+          articleId,
+          slug,
+          safeTitle,
+          safeTitle,
+          safeExcerpt,
+          safeContent,
+          category,
+          tagsJson,
+          sourceName,
+          sourceUrl,
+          nowIso,
+          nowIso,
+          nowIso,
+          publishedAt,
+          status,
+          contentHash,
+          reviewedBy,
+          seoTitle,
+          seoDesc
+        )
+        .run();
+
+      // Audit log
+      await c.env.DB.prepare(
+        `INSERT INTO audit_logs (id, actor, action, article_id, created_at, metadata)
+         VALUES (?, ?, ?, ?, ?, ?)`
+      )
+        .bind(
+          `aud_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          actor,
+          status === 'published' ? 'create_and_publish' : 'create_manual',
+          articleId,
+          nowIso,
+          JSON.stringify({ title: safeTitle, category, status })
+        )
+        .run();
+
+      return c.json({ success: true, articleId, slug, status });
+    } catch (err: any) {
+      return c.json({ success: false, message: `Lỗi lưu bài viết: ${err.message || String(err)}` }, 500);
+    }
+  });
 
   // Save Draft API
   app.post('/api/admin/articles/:id/save', async (c) => {

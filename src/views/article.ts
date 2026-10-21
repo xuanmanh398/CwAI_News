@@ -61,19 +61,11 @@ export function renderArticlePage(
     <div class="article-meta-bar">
       <div>
         <span class="category-badge" style="margin-bottom:0;">${escapeHtml(article.category)}</span>
-        <span style="margin-left: 10px;">📅 Xuất bản: ${pubDateFormatted}</span>
+        <span style="margin-left: 10px;">📅 ${pubDateFormatted}</span>
         ${updatedDateFormatted ? `<span style="margin-left: 8px;">(Cập nhật: ${updatedDateFormatted})</span>` : ''}
       </div>
       <div>
         <span>Nguồn: <strong>${escapeHtml(article.source_name)}</strong></span>
-      </div>
-    </div>
-
-    <!-- AI Editorial Transparency Notice -->
-    <div class="ai-editorial-badge">
-      <span style="font-size: 1.2rem;">🤖</span>
-      <div>
-        <strong>Minh bạch biên tập:</strong> Bản tin được ban biên tập <em>Tin Tức Việt</em> tổng hợp và biên soạn với sự hỗ trợ của trí tuệ nhân tạo (AI), dữ kiện được đối chiếu từ nguồn tin gốc.
       </div>
     </div>
 
@@ -158,16 +150,15 @@ export function renderArticlePage(
 
     <!-- Editorial Policy Widget -->
     <div class="sidebar-widget">
-      <h3 class="widget-title">Chính sách biên tập</h3>
+      <h3 class="widget-title">Tòa soạn Tin Tức Việt</h3>
       <p style="font-size:0.85rem; color:#4b5563; line-height:1.6; margin-bottom:12px;">
-        Website tuân thủ nguyên tắc báo chí trung thực, khách quan và minh bạch về việc sử dụng AI.
+        Chuyên trang tin tức công nghệ và đời sống số hàng đầu Việt Nam, cập nhật liên tục 24/7 với thông tin chính xác, khách quan và hữu ích cho độc giả.
       </p>
       <ul style="font-size:0.85rem; line-height:1.8; padding-left:18px; color:#4b5563;">
-        <li>Con người chịu trách nhiệm xuất bản</li>
-        <li>Không bịa đặt số liệu hoặc phát ngôn</li>
-        <li>Trích dẫn nguồn công khai rõ ràng</li>
+        <li>Thông tin kiểm chứng từ nguồn chính thống</li>
+        <li>Phân tích chuyên sâu về công nghệ & AI</li>
+        <li>Góc nhìn đa chiều về thị trường số Việt Nam</li>
       </ul>
-      <a href="/nguyen-tac-bien-tap" style="display:inline-block; margin-top:12px; font-size:0.82rem; font-weight:700; color:var(--primary);">Xem chi tiết quy chuẩn »</a>
     </div>
 
     <!-- Correction Contact Box -->

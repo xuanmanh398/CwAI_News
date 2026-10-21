@@ -175,11 +175,11 @@ export function renderHomePage(
 
     <!-- Quick RSS Subscribe / About Box -->
     <div class="sidebar-widget" style="background:#f8fafc; border:1px solid #cbd5e1;">
-      <h3 class="widget-title" style="border-bottom-color:#b31217;">Nguyên tắc minh bạch</h3>
+      <h3 class="widget-title" style="border-bottom-color:#b31217;">Về Tin Tức Việt</h3>
       <p style="font-size:0.85rem; color:#4b5563; line-height:1.6; margin-bottom:12px;">
-        Mọi bản tin trên Tin Tức Việt được tổng hợp từ nguồn báo chí uy tín với sự hỗ trợ của trí tuệ nhân tạo (AI) và <strong>luôn được biên tập viên kiểm tra trước khi xuất bản</strong>.
+        Chuyên trang tin tức và phân tích chuyên sâu các chuyển động công nghệ mới, trí tuệ nhân tạo, an ninh số và thiết bị thông minh tại Việt Nam và toàn cầu.
       </p>
-      <a href="/nguyen-tac-bien-tap" style="font-size:0.82rem; font-weight:700; color:#b31217;">Tìm hiểu quy trình biên tập »</a>
+      <a href="/gioi-thieu" style="font-size:0.82rem; font-weight:700; color:#b31217;">Tìm hiểu về tòa soạn »</a>
     </div>
 
     <!-- Bottom Sidebar Ad Slot -->
