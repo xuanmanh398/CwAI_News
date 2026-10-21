@@ -113,6 +113,23 @@ export async function runIngestionPipeline(
 
     for (const item of fetchRes.items) {
       try {
+        item.title = item.title.normalize('NFC').trim();
+        item.description = item.description.normalize('NFC').trim();
+
+        // Freshness Check: Only ingest fresh news (published within last 48 hours)
+        let sourcePubIso: string | null = null;
+        if (item.pubDate) {
+          const parsedDate = new Date(item.pubDate);
+          if (!isNaN(parsedDate.getTime())) {
+            const ageHours = (Date.now() - parsedDate.getTime()) / (1000 * 60 * 60);
+            if (ageHours > 48) {
+              // Skip old articles to only keep fresh, current tech news
+              continue;
+            }
+            sourcePubIso = parsedDate.toISOString();
+          }
+        }
+
         const canonicalUrl = normalizeUrl(item.link);
         const normTitle = normalizeTitleForDeduplication(item.title);
         const contentHash = await computeSha256(normTitle);
@@ -160,15 +177,6 @@ export async function runIngestionPipeline(
         const slug = generateSlug(draft.title, uniqueSuffix);
         const articleId = `art_${Date.now()}_${uniqueSuffix}`;
         const itemCreatedIso = new Date().toISOString();
-
-        // Parse pubDate
-        let sourcePubIso: string | null = null;
-        if (item.pubDate) {
-          const parsedDate = new Date(item.pubDate);
-          if (!isNaN(parsedDate.getTime())) {
-            sourcePubIso = parsedDate.toISOString();
-          }
-        }
 
         // Insert new article strictly with status = 'pending'
         await env.DB.prepare(

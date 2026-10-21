@@ -24,14 +24,15 @@ const parser = new XMLParser({
 
 function extractText(node: any): string {
   if (!node) return '';
-  if (typeof node === 'string') return node;
-  if (typeof node === 'number') return String(node);
-  if (node.__cdata) return String(node.__cdata);
-  if (node['#text']) return String(node['#text']);
-  if (Array.isArray(node)) {
-    return node.map(extractText).join(' ').trim();
+  let text = '';
+  if (typeof node === 'string') text = node;
+  else if (typeof node === 'number') text = String(node);
+  else if (node.__cdata) text = String(node.__cdata);
+  else if (node['#text']) text = String(node['#text']);
+  else if (Array.isArray(node)) {
+    text = node.map(extractText).join(' ').trim();
   }
-  return '';
+  return text ? text.normalize('NFC') : '';
 }
 
 function extractLink(node: any): string {
@@ -86,10 +87,10 @@ export function parseXmlFeed(xmlString: string, maxItems: number = 10): FeedFetc
 
         if (title && link) {
           items.push({
-            title: title.trim(),
+            title: title.trim().normalize('NFC'),
             link: link.trim(),
-            description: stripHtmlToPlainText(rawDesc || content || '').slice(0, 500),
-            content: content ? content.trim() : undefined,
+            description: stripHtmlToPlainText(rawDesc || content || '').slice(0, 500).normalize('NFC'),
+            content: content ? content.trim().normalize('NFC') : undefined,
             pubDate: pubDate ? pubDate.trim() : undefined,
             guid: guid || link,
             categories,
@@ -125,9 +126,9 @@ export function parseXmlFeed(xmlString: string, maxItems: number = 10): FeedFetc
 
         if (title && link) {
           items.push({
-            title: title.trim(),
+            title: title.trim().normalize('NFC'),
             link: link.trim(),
-            description: stripHtmlToPlainText(rawSummary).slice(0, 500),
+            description: stripHtmlToPlainText(rawSummary).slice(0, 500).normalize('NFC'),
             pubDate: pubDate ? pubDate.trim() : undefined,
             guid: guid || link,
             categories,

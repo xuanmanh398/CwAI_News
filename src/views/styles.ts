@@ -94,7 +94,7 @@ a:hover { color: var(--primary); }
 /* Article Detail */
 .article-detail { background: #ffffff; border: 1px solid var(--border-color); border-radius: 8px; padding: 30px; margin-bottom: 30px; }
 .breadcrumbs { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 14px; }
-.article-headline { font-family: var(--font-serif); font-size: 2.1rem; font-weight: 800; line-height: 1.35; color: #111827; margin-bottom: 16px; }
+.article-headline { font-family: var(--font-sans); font-size: 2rem; font-weight: 700; line-height: 1.35; color: #111827; margin-bottom: 16px; letter-spacing: -0.01em; }
 .article-lead { font-size: 1.15rem; font-weight: 600; color: #374151; line-height: 1.6; margin-bottom: 20px; border-left: 3px solid var(--primary); padding-left: 14px; }
 .article-meta-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); padding: 10px 0; margin-bottom: 24px; font-size: 0.85rem; color: var(--text-muted); }
 .ai-editorial-badge { background: #eff6ff; border: 1px solid #bfdbfe; color: #1e40af; padding: 12px 16px; border-radius: 6px; margin-bottom: 24px; font-size: 0.88rem; display: flex; align-items: center; gap: 10px; }

@@ -4,6 +4,7 @@
 export function escapeHtml(str: string): string {
   if (!str) return '';
   return str
+    .normalize('NFC')
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
@@ -14,7 +15,7 @@ export function escapeHtml(str: string): string {
 export function sanitizeHtmlContent(html: string): string {
   if (!html) return '';
 
-  let sanitized = html;
+  let sanitized = html.normalize('NFC');
 
   // 1. Remove dangerous tags and their content: script, style, iframe, object, embed, applet, form, svg, base
   sanitized = sanitized.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
